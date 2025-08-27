@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExampleLayoutTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    MatchParentSizeComposable()
+                    horizontalPager()
                 }
             }
         }
