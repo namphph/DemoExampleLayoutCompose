@@ -1,5 +1,6 @@
 package com.amazon.examplelayout
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -43,6 +44,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -82,7 +84,7 @@ fun horizontalPager(){
                 Card(
                     Modifier
                         .fillMaxSize()
-                        .shimmerLoading(1000)
+                        .shimmerLoading(10000)
                         .padding(end = if (page == pagerState.pageCount - 1) 0.dp else 16.dp)
                         .wrapContentHeight()
                         .graphicsLayer {
@@ -113,6 +115,16 @@ fun horizontalPager(){
                         )
                     }
                 }
+            }
+            val context = LocalContext.current
+            Button(onClick = {
+                val intent = Intent(
+                    context,
+                    FlowActivity::class.java
+                )
+                context.startActivity(intent)
+            }) {
+                Text(text = "Next")
             }
             nextPage(pagerState)
             indicator(pagerState)
