@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
@@ -27,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.amazon.examplelayout.ui.theme.ExampleLayoutTheme
@@ -40,9 +43,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExampleLayoutTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    ArtistCard(){
-
-                    }
+                    MatchParentSizeComposable()
                 }
             }
         }
@@ -139,9 +140,24 @@ fun ArtistCard(onClick:()-> Unit) {
         Modifier
             .fillMaxSize()
             .clickable(onClick = onClick)
-            .padding(padding)
+            .paddingFromBaseline(top = 50.dp)
     ) {
        Text(text = "HELLO")
+    }
+}
+
+// MatchParentSize
+@Composable
+fun MatchParentSizeComposable() {
+    Box {
+        Spacer(
+            Modifier
+                .matchParentSize()
+                .background(Color.Red)
+        )
+        ArtistCard() {
+
+        }
     }
 }
 
