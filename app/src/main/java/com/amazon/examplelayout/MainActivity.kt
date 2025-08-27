@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -31,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.amazon.examplelayout.ui.theme.ExampleLayoutTheme
 import com.amazon.examplelayout.ui.theme.Purple80
 
-
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExampleLayoutTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    ArtistCardArrange()
+                    ArtistCard(){
+
+                    }
                 }
             }
         }
@@ -126,6 +128,20 @@ fun ReposiveExample() {
                 Text(text = "B")
             }
         }
+    }
+}
+
+// Order modifier differnce affect ui
+@Composable
+fun ArtistCard(onClick:()-> Unit) {
+    val padding = 16.dp
+    Column(
+        Modifier
+            .fillMaxSize()
+            .clickable(onClick = onClick)
+            .padding(padding)
+    ) {
+       Text(text = "HELLO")
     }
 }
 
