@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -56,43 +59,63 @@ fun horizontalPager(){
             state = pagerState,
             pagerSnapDistance = PagerSnapDistance.atMost(10)
         )
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20f.dp)
-                .background(Purple40),
-            pageSize = threePagesPerViewport,
-            contentPadding = PaddingValues(start = 64.dp, end = 64.dp),
-            flingBehavior = fling
-        ) { page ->
-            Card(
-                Modifier
-                    .size(200.dp)
-                    .graphicsLayer {
-                        // Calculate the absolute offset for the current page from the
-                        // scroll position. We use the absolute value which allows us to mirror
-                        // any effects for both directions
-                        val pageOffset = (
-                                (pagerState.currentPage - page) + pagerState
-                                    .currentPageOffsetFraction
-                                ).absoluteValue
+        Column(Modifier.align(Alignment.BottomCenter)) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(20f.dp)
+                    .background(Purple40),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                flingBehavior = fling
+            ) { page ->
+                Card(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(end = if (page == pagerState.pageCount - 1) 0.dp else 16.dp)
+                        .wrapContentHeight()
+                        .graphicsLayer {
+                            // Calculate the absolute offset for the current page from the
+                            // scroll position. We use the absolute value which allows us to mirror
+                            // any effects for both directions
+                            val pageOffset = (
+                                    (pagerState.currentPage - page) + pagerState
+                                        .currentPageOffsetFraction
+                                    ).absoluteValue
 
-                        // We animate the alpha, between 50% and 100%
-                        alpha = lerp(
-                            start = 0.5f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            // We animate the alpha, between 50% and 100%
+                            alpha = lerp(
+                                start = 0.5f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            )
+                        }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(), // Box chiếm toàn bộ Card
+                        contentAlignment = Alignment.Center // Căn giữa cả theo chiều ngang và dọc
+                    ) {
+                        Text(
+                            text = "Hello ${page}",
+                            textAlign = TextAlign.Center // căn giữa text trong TextView (nếu text dài)
                         )
                     }
-            ) {
-                Text(
-                    text = "Hello" + page.toString(),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                }
             }
+            nextPage(pagerState)
+            indicator(pagerState)
         }
-        val couroutineScope = rememberCoroutineScope()
+    }
+}
+
+@Composable
+fun nextPage(pagerState: PagerState) {
+    val couroutineScope = rememberCoroutineScope()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth() // Box chiếm toàn màn hình
+    ) {
         Button(
             onClick = {
                 // launch coroutine để scroll pager
@@ -101,34 +124,36 @@ fun horizontalPager(){
                 }
             },
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 20f.dp),
+                .align(Alignment.Center) // căn giữa Box
+                .padding(bottom = 20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Magenta,  // màu nền Button
-                contentColor = Color.White       // màu chữ bên trong Button
+                containerColor = Color.Magenta,
+                contentColor = Color.White
             )
         ) {
             Text("Jump to Page 5")
         }
+    }
+}
 
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 50.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                Box(
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(16.dp)
-                )
-            }
+@Composable
+fun indicator(pagerState: PagerState) {
+    Row(
+        Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(bottom = 50.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        repeat(pagerState.pageCount) { iteration ->
+            val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+            Box(
+                modifier = Modifier
+                    .padding(2.dp)
+                    .clip(CircleShape)
+                    .background(color)
+                    .size(16.dp)
+            )
         }
     }
 }
