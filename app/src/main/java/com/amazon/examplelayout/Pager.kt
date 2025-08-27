@@ -1,6 +1,12 @@
 package com.amazon.examplelayout
 
 import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,11 +32,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
@@ -72,6 +82,7 @@ fun horizontalPager(){
                 Card(
                     Modifier
                         .fillMaxSize()
+                        .shimmerLoading(1000)
                         .padding(end = if (page == pagerState.pageCount - 1) 0.dp else 16.dp)
                         .wrapContentHeight()
                         .graphicsLayer {
@@ -114,7 +125,7 @@ fun nextPage(pagerState: PagerState) {
     val couroutineScope = rememberCoroutineScope()
     Box(
         modifier = Modifier
-            .fillMaxWidth() // Box chiếm toàn màn hình
+            .fillMaxWidth()
     ) {
         Button(
             onClick = {
@@ -177,6 +188,39 @@ fun verticalPager(){
         Text(
             text = "Page: $page",
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+@Composable
+fun Modifier.shimmerLoading(
+    durationMillis: Int = 1000,
+): Modifier {
+    val transition = rememberInfiniteTransition(label = "")
+
+    val translateAnimation by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 500f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = durationMillis,
+                easing = LinearEasing,
+            ),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "",
+    )
+
+    return drawBehind {
+        drawRect(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    Color.LightGray.copy(alpha = 0.2f),
+                    Color.LightGray.copy(alpha = 1.0f),
+                    Color.LightGray.copy(alpha = 0.2f),
+                ),
+                start = Offset(x = translateAnimation, y = translateAnimation),
+                end = Offset(x = translateAnimation + 100f, y = translateAnimation + 100f),
+            )
         )
     }
 }
